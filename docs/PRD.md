@@ -207,15 +207,9 @@ Users can install with:
 
 ## 10. Release & Development Workflow
 
-### 10.1 No Poetry Requirement
-
-- Poetry is not used
-- No contributor is forced to use specific tooling
-- All workflows are controlled by custom scripts
-
 ---
 
-### 10.2 Release Automation
+### 10.1 Release Automation
 
 - A pure Python script (release.py) is used
 - Reasons:
@@ -226,7 +220,7 @@ Users can install with:
 
 ---
 
-### 10.3 Responsibilities of release.py
+### 10.2 Responsibilities of release.py
 
 - Bump __version__
 - Increment DATA_VERSIONS per exchange–segment
@@ -268,7 +262,7 @@ Users can install with:
 
 - Add more exchanges via new package releases
 - Add new segments per exchange
-- Optional Pandas backend
+- Optional Pandas or other backends
 - More calendar utilities
 - Optional special session timings (`start_time`, `end_time`)
 - Better documentation and examples
