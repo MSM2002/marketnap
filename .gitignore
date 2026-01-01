@@ -1,2 +1,5 @@
 # Other data storage formats, only feather is going to be used
 *.csv
+
+# Cache files
+*__pycache__/
