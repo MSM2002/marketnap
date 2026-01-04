@@ -1,4 +1,5 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple
+
 import polars as pl
 
 # ==========================
@@ -106,8 +107,6 @@ def validate_session_type_values(
     return rows_where(mask)
 
 
-from typing import Dict, List, Tuple
-
 def check_string_normalization(
     df: pl.DataFrame,
 ) -> Dict[str, List[Tuple[int, str, str]]]:
@@ -123,7 +122,6 @@ def check_string_normalization(
 
         series = df[col]
 
-        # Work in string space
         original = (
             series.cast(pl.Utf8)
             if series.dtype == pl.Categorical
@@ -139,11 +137,7 @@ def check_string_normalization(
         rows = rows_where(mask)
 
         bad_values = [
-            (
-                row,
-                original[row],
-                normalized[row],
-            )
+            (row, original[row], normalized[row])
             for row in rows
         ]
 
@@ -151,11 +145,14 @@ def check_string_normalization(
 
     return issues
 
-
 # ==========================
 # TRANSFORMATION (INGEST)
 # ==========================
-def align_and_cast(df: pl.DataFrame, schema: SchemaType) -> pl.DataFrame:
+def align_and_cast(
+    df: pl.DataFrame,
+    schema: SchemaType,
+    date_format: str,
+) -> pl.DataFrame:
     missing = set(schema) - set(df.columns)
     extra = set(df.columns) - set(schema)
 
@@ -173,7 +170,9 @@ def align_and_cast(df: pl.DataFrame, schema: SchemaType) -> pl.DataFrame:
             expr = normalize_string_expr(expr)
 
         if name == "session_type":
+            # Normalize first so validation is reliable
             df = df.with_columns(expr.alias(name))
+
             invalid = validate_session_type_values(df, name)
             if invalid:
                 bad = (
@@ -187,6 +186,14 @@ def align_and_cast(df: pl.DataFrame, schema: SchemaType) -> pl.DataFrame:
                 raise ValueError(f"Invalid session_type values: {bad}")
 
             exprs.append(pl.col(name).cast(pl.Categorical))
+
+        elif dtype == pl.Date:
+            exprs.append(
+                expr
+                .str.strptime(pl.Date, format=date_format, strict=True)
+                .alias(name)
+            )
+
         else:
             exprs.append(expr.cast(dtype, strict=False).alias(name))
 
