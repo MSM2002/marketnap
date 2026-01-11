@@ -69,7 +69,7 @@ The schema for each Feather file is designed to be simple, programmatically frie
 |---------------|-------------|
 | `date`        | The calendar date of the holiday or special session |
 | `description` | Human-readable description of the event (e.g., “Republic Day”, “Early Close”) |
-| `session_type`| Categorizes the day, e.g., `HOLIDAY`, `EARLY_CLOSE`, `TRADING_SESSION_ADJUSTMENT` |
+| `session_type`| Categorizes the day, e.g., `Trading Holiday`, `Settlement Holiday`, `Special Session` |
 | `circular_date`| The official exchange circular date that announced the holiday or session |
 
 **Notes:**
